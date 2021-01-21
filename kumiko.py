@@ -73,8 +73,19 @@ class Administration(commands.Cog):
         await ctx.send("minecraft.furkanmudanyali.com")
 
 
-    
-    
+    @commands.command()
+    async def userinfo(self, ctx):
+        """returns the user's info"""
+        embed = discord.Embed(title="Userinfo command", url="https://github.com/inthecatsdreams/kumiko", description=ctx.message.author.display_name + "'s info")
+        embed.set_author(name=ctx.message.author.display_name)
+        embed.set_thumbnail(url=ctx.message.author.avatar_url)
+        embed.add_field(name="Registered on ", value=ctx.message.author.created_at, inline=True)
+        embed.add_field(name="User ID ", value=ctx.message.author.id, inline=True)
+        embed.add_field(name="Colour representing the user ", value=ctx.message.author.color)
+        embed.set_footer(text="i'm a retarded bot")
+        await ctx.send(embed=embed)
+
+
     @commands.command()
     async def clean_cache(self, ctx):
         """Clear the music cache"""
@@ -147,7 +158,7 @@ class Music(commands.Cog):
             ctx.voice_client.stop()
 
 bot = commands.Bot(command_prefix=commands.when_mentioned_or(config["prefix"]),
-                   description='I mostly am useful for music (for now xd)')
+                   description='Here is what I can do (as of v1.03):')
 
 @bot.event
 async def on_ready():
@@ -161,4 +172,6 @@ async def on_ready():
 bot.add_cog(Music(bot))
 bot.add_cog(Administration(bot))
 bot.run(config["token"])
+
+
 
