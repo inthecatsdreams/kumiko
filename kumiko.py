@@ -1,4 +1,4 @@
-  
+
 import asyncio
 import discord
 import youtube_dl
@@ -7,9 +7,12 @@ import json
 import glob
 import os
 
-
-config_file = open('config.json', 'r')
-config = json.load(config_file)
+if os.path.exists("./config.json"):
+    config_file = open('config.json', 'r')
+    config = json.load(config_file)
+else:
+    print("Make sure to rename 'config.example.json' to 'config.json'")
+    exit(-1)
 
 youtube_dl.utils.bug_reports_message = lambda: ''
 
@@ -25,7 +28,7 @@ ytdl_format_options = {
     'quiet': True,
     'no_warnings': True,
     'default_search': 'auto',
-    'source_address': '0.0.0.0' 
+    'source_address': '0.0.0.0'
 }
 
 ffmpeg_options = {
@@ -50,20 +53,20 @@ class YTDLSource(discord.PCMVolumeTransformer):
         data = await loop.run_in_executor(None, lambda: ytdl.extract_info(url, download=not stream))
 
         if 'entries' in data:
-            # take first item from a playlist
             data = data['entries'][0]
 
         filename = data['url'] if stream else ytdl.prepare_filename(data)
         return cls(discord.FFmpegPCMAudio(filename, **ffmpeg_options), data=data)
 
+
 class Administration(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-    
+
     @commands.command()
     async def avatar(self, ctx):
         """Sends the message's author's avatar"""
-        
+
         async with ctx.typing():
             await ctx.send(ctx.message.author.avatar_url)
 
@@ -72,24 +75,26 @@ class Administration(commands.Cog):
         """sends furkan's mc server"""
         await ctx.send("minecraft.furkanmudanyali.com")
 
-
     @commands.command()
     async def userinfo(self, ctx):
         """returns the user's info"""
-        embed = discord.Embed(title="Userinfo command", url="https://github.com/inthecatsdreams/kumiko", description=ctx.message.author.display_name + "'s info")
+        embed = discord.Embed(title="Userinfo command", url="https://github.com/inthecatsdreams/kumiko",
+                              description=ctx.message.author.display_name + "'s info")
         embed.set_author(name=ctx.message.author.display_name)
         embed.set_thumbnail(url=ctx.message.author.avatar_url)
-        embed.add_field(name="Registered on ", value=ctx.message.author.created_at, inline=True)
-        embed.add_field(name="User ID ", value=ctx.message.author.id, inline=True)
-        embed.add_field(name="Colour representing the user ", value=ctx.message.author.color)
+        embed.add_field(name="Registered on ",
+                        value=ctx.message.author.created_at, inline=True)
+        embed.add_field(
+            name="User ID ", value=ctx.message.author.id, inline=True)
+        embed.add_field(name="Colour representing the user ",
+                        value=ctx.message.author.color)
         embed.set_footer(text="i'm a retarded bot")
         await ctx.send(embed=embed)
-
 
     @commands.command()
     async def clean_cache(self, ctx):
         """Clear the music cache"""
-        
+
         files = glob.glob("*.webm")
         if (len(files) > 0):
             await ctx.send("Found {} files.".format(len(files)))
@@ -100,12 +105,6 @@ class Administration(commands.Cog):
             await ctx.send("There is nothing to delete.")
 
 
-
-
-        
-
-
-    
 class Music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -125,7 +124,8 @@ class Music(commands.Cog):
 
         async with ctx.typing():
             player = await YTDLSource.from_url(url, loop=self.bot.loop)
-            ctx.voice_client.play(player, after=lambda e: print('Player error: %s' % e) if e else None)
+            ctx.voice_client.play(player, after=lambda e: print(
+                'Player error: %s' % e) if e else None)
 
         await ctx.send('Now playing: {}'.format(player.title))
 
@@ -146,19 +146,21 @@ class Music(commands.Cog):
         await ctx.voice_client.disconnect()
 
     @yt.before_invoke
-    
     async def ensure_voice(self, ctx):
         if ctx.voice_client is None:
             if ctx.author.voice:
                 await ctx.author.voice.channel.connect()
             else:
                 await ctx.send("You are not connected to a voice channel.")
-                raise commands.CommandError("Author not connected to a voice channel.")
+                raise commands.CommandError(
+                    "Author not connected to a voice channel.")
         elif ctx.voice_client.is_playing():
             ctx.voice_client.stop()
 
+
 bot = commands.Bot(command_prefix=commands.when_mentioned_or(config["prefix"]),
                    description='Here is what I can do (as of v1.03):')
+
 
 @bot.event
 async def on_ready():
@@ -167,11 +169,7 @@ async def on_ready():
     game = discord.Game("{}help | taking a fat shit".format(config["prefix"]))
     await bot.change_presence(status=discord.Status.do_not_disturb, activity=game)
 
-    
 
 bot.add_cog(Music(bot))
 bot.add_cog(Administration(bot))
 bot.run(config["token"])
-
-
-
