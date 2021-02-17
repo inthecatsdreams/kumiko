@@ -90,6 +90,16 @@ class Administration(commands.Cog):
                         value=ctx.message.author.color)
         embed.set_footer(text="i'm a retarded bot")
         await ctx.send(embed=embed)
+    @commands.command()
+    async def twitter_vid(self, ctx):
+        """Download videos and sends videosfrom twitter"""
+        video_name = str(ctx.message.author.id) + ".mp4"
+        video_url = ctx.message.content.split(" ")[1]
+        #await ctx.send(video_url +  video_name)
+        os.system(f"youtube-dl -o ./{video_name} {video_url}")
+        await ctx.send(file=discord.File(f"./{video_name}"))
+        os.remove(f"./{video_name}")
+
 
     @commands.command()
     async def clean_cache(self, ctx):
@@ -159,7 +169,7 @@ class Music(commands.Cog):
 
 
 bot = commands.Bot(command_prefix=commands.when_mentioned_or(config["prefix"]),
-                   description='Here is what I can do (as of v1.03):')
+                   description='Here is what I can do (as of v1.04):')
 
 
 @bot.event
