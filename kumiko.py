@@ -6,6 +6,7 @@ from discord.ext import commands
 import json
 import glob
 import os
+import requests
 
 if os.path.exists("./config.json"):
     config_file = open('config.json', 'r')
@@ -85,21 +86,30 @@ class Administration(commands.Cog):
         embed.add_field(name="Registered on ",
                         value=ctx.message.author.created_at, inline=True)
         embed.add_field(
-            name="User ID ", value=ctx.message.author.id, inline=True)
+            name="User id ", value=ctx.message.author.id, inline=True)
         embed.add_field(name="Colour representing the user ",
                         value=ctx.message.author.color)
         embed.set_footer(text="i'm a retarded bot")
         await ctx.send(embed=embed)
     @commands.command()
     async def twitter_vid(self, ctx):
-        """Download videos and sends videosfrom twitter"""
-        video_name = str(ctx.message.author.id) + ".mp4"
+        """Download videos and sends videos from twitter"""
         video_url = ctx.message.content.split(" ")[1]
-        #await ctx.send(video_url +  video_name)
-        os.system(f"youtube-dl -o ./{video_name} {video_url}")
-        await ctx.send(file=discord.File(f"./{video_name}"))
-        os.remove(f"./{video_name}")
+        video_name = str(ctx.message.author.id) + ".mp4"
+        if (video_url.startswith("https://twitter.com")):
+            os.system(f"youtube-dl -o ./{video_name} {video_url}")
+            await ctx.send(file=discord.File(f"./{video_name}"))
+            os.remove(f"./{video_name}")
+        else:
+            await ctx.send("This is for twitter videos only.")
 
+    @commands.command()
+    async def booru(self, ctx):
+        query = ctx.message.content.split(" ")[1]
+        api_url = f"https://safebooru.donmai.us/posts.json?random=true&tags={query}&rating=safe&limit=1"
+        r = requests.get(api_url)
+        pic = r.json()[0]["file_url"]
+        await ctx.send(pic)
 
     @commands.command()
     async def clean_cache(self, ctx):
