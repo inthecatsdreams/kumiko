@@ -28,4 +28,6 @@ profit
 - clear music cache (as of 1.02)
 - sends user's information (as of 1.03)
 - Download twitter videos (1.04)
+- safebooru (1.05)
+
 
