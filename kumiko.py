@@ -8,6 +8,7 @@ import glob
 import os
 import requests
 
+
 if os.path.exists("./config.json"):
     config_file = open('config.json', 'r')
     config = json.load(config_file)
@@ -60,7 +61,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
         return cls(discord.FFmpegPCMAudio(filename, **ffmpeg_options), data=data)
 
 
-class Administration(commands.Cog):
+class General(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -72,14 +73,9 @@ class Administration(commands.Cog):
             await ctx.send(ctx.message.author.avatar_url)
 
     @commands.command()
-    async def furkan(self, ctx):
-        """sends furkan's mc server"""
-        await ctx.send("minecraft.furkanmudanyali.com")
-
-    @commands.command()
     async def userinfo(self, ctx):
         """returns the user's info"""
-        embed = discord.Embed(title="Userinfo command", url="https://github.com/inthecatsdreams/kumiko",
+        embed = discord.Embed(title="Userinfo command", url="https://github.com/boozerboozeman/kumiko",
                               description=ctx.message.author.display_name + "'s info")
         embed.set_author(name=ctx.message.author.display_name)
         embed.set_thumbnail(url=ctx.message.author.avatar_url)
@@ -93,7 +89,7 @@ class Administration(commands.Cog):
         await ctx.send(embed=embed)
     @commands.command()
     async def twitter_vid(self, ctx):
-        """Download videos and sends videos from twitter"""
+        """Downloads and sends videos from twitter"""
         video_url = ctx.message.content.split(" ")[1]
         video_name = str(ctx.message.author.id) + ".mp4"
         if (video_url.startswith("https://twitter.com")):
@@ -109,7 +105,11 @@ class Administration(commands.Cog):
         api_url = f"https://safebooru.donmai.us/posts.json?random=true&tags={query}&rating=safe&limit=1"
         r = requests.get(api_url)
         pic = r.json()[0]["file_url"]
-        await ctx.send(pic)
+        embed = discord.Embed(title=f"result for {query}", url=pic)
+        embed.set_image(url=pic)
+        
+        
+        await ctx.send(embed=embed)
 
     @commands.command()
     async def clean_cache(self, ctx):
@@ -130,16 +130,7 @@ class Music(commands.Cog):
         self.bot = bot
 
     @commands.command()
-    async def join(self, ctx, *, channel: discord.VoiceChannel):
-        """Joins a voice channel"""
-
-        if ctx.voice_client is not None:
-            return await ctx.voice_client.move_to(channel)
-
-        await channel.connect()
-
-    @commands.command()
-    async def yt(self, ctx, *, url):
+    async def music(self, ctx, *, url):
         """Plays from a url (almost anything youtube_dl supports)"""
 
         async with ctx.typing():
@@ -179,7 +170,7 @@ class Music(commands.Cog):
 
 
 bot = commands.Bot(command_prefix=commands.when_mentioned_or(config["prefix"]),
-                   description='Here is what I can do (as of v1.04):')
+                   description='Here is what I can do:')
 
 
 @bot.event
@@ -191,5 +182,5 @@ async def on_ready():
 
 
 bot.add_cog(Music(bot))
-bot.add_cog(Administration(bot))
+bot.add_cog(General(bot))
 bot.run(config["token"])
