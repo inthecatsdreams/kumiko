@@ -23,11 +23,15 @@ profit
 
 
 # what it does (for now)
-- plays music from yt (as of 1.0)
-- sends author avatar (as of 1.02)
-- clear music cache (as of 1.02)
-- sends user's information (as of 1.03)
-- Download twitter videos (1.04)
-- safebooru (1.05)
-
-
+```
+General:
+  avatar      Sends the message's author's avatar
+  booru       
+  clean_cache Clear the music cache
+  twitter_vid Downloads and sends videos from twitter
+  userinfo    returns the user's info
+Music:
+  stop        Stops and disconnects the bot from voice
+  volume      Changes the player's volume
+  yt          Plays from a url (almost anything youtube_dl supports)
+ ```
