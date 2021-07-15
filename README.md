@@ -30,8 +30,4 @@ General:
   clean_cache Clear the music cache
   twitter_vid Downloads and sends videos from twitter
   userinfo    returns the user's info
-Music:
-  stop        Stops and disconnects the bot from voice
-  volume      Changes the player's volume
-  yt          Plays from a url (almost anything youtube_dl supports)
  ```
